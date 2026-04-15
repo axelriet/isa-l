@@ -13,13 +13,13 @@
 #define ISAL_VERSION ISAL_MAKE_VERSION(ISAL_MAJOR_VERSION, ISAL_MINOR_VERSION, ISAL_PATCH_VERSION)
 
 #ifndef RC_INVOKED
-#include <isa-l/crc.h>
-#include <isa-l/crc64.h>
-#include <isa-l/erasure_code.h>
-#include <isa-l/gf_vect_mul.h>
-#include <isa-l/igzip_lib.h>
-#include <isa-l/isal_api.h>
-#include <isa-l/mem_routines.h>
-#include <isa-l/raid.h>
+#include <include/crc.h>
+#include <include/crc64.h>
+#include <include/erasure_code.h>
+#include <include/gf_vect_mul.h>
+#include <include/igzip_lib.h>
+#include <include/isal_api.h>
+#include <include/mem_routines.h>
+#include <include/raid.h>
 #endif // RC_INVOKED
 #endif //_ISAL_H_

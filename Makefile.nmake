@@ -378,14 +378,14 @@ isa-l.h:
 	@echo #define ISAL_VERSION ISAL_MAKE_VERSION(ISAL_MAJOR_VERSION, ISAL_MINOR_VERSION, ISAL_PATCH_VERSION)>> $@
 	@echo.>> $@
 	@echo #ifndef RC_INVOKED>> $@
-	@echo #include ^<isa-l/crc.h^>>> $@
-	@echo #include ^<isa-l/crc64.h^>>> $@
-	@echo #include ^<isa-l/erasure_code.h^>>> $@
-	@echo #include ^<isa-l/gf_vect_mul.h^>>> $@
-	@echo #include ^<isa-l/igzip_lib.h^>>> $@
-	@echo #include ^<isa-l/isal_api.h^>>> $@
-	@echo #include ^<isa-l/mem_routines.h^>>> $@
-	@echo #include ^<isa-l/raid.h^>>> $@
+	@echo #include ^<include/crc.h^>>> $@
+	@echo #include ^<include/crc64.h^>>> $@
+	@echo #include ^<include/erasure_code.h^>>> $@
+	@echo #include ^<include/gf_vect_mul.h^>>> $@
+	@echo #include ^<include/igzip_lib.h^>>> $@
+	@echo #include ^<include/isal_api.h^>>> $@
+	@echo #include ^<include/mem_routines.h^>>> $@
+	@echo #include ^<include/raid.h^>>> $@
 	@echo #endif // RC_INVOKED>> $@
 	@echo #endif //_ISAL_H_>> $@
 
