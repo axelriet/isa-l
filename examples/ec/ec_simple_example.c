@@ -58,6 +58,7 @@ gf_gen_decode_matrix_simple(u8 *encode_matrix, u8 *decode_matrix, u8 *invert_mat
                             int m);
 
 int
+__cdecl
 main(int argc, char *argv[])
 {
         int i, j, m, c, e, ret;

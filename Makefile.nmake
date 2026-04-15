@@ -201,8 +201,8 @@ objs = \
 	bin\mem_multibinary.obj
 
 INCLUDES   = -I./ -Ierasure_code/ -Iraid/ -Icrc/ -Iigzip/ -Iprograms/ -Imem/ -Imisc/ -Iinclude/ -Itests/fuzz/ -Iexamples/ec/
-CFLAGS_REL = -O2 -DNDEBUG /Z7 /Gy
-CFLAGS_DBG = -Od -DDEBUG /Z7
+CFLAGS_REL = -O2 -DNDEBUG /Z7 /Gy /Oi /GF /Ot /Ob2 /Oy /MT /sdl- /GS- /arch:AVX2 /GL
+CFLAGS_DBG = -Od -DDEBUG /Z7 /MTd /GS- /Gy- /arch:AVX2 /sdl- /Oy
 LINKFLAGS  = -nologo -incremental:no -debug
 CFLAGS     = $(CFLAGS_REL) -nologo -D_USE_MATH_DEFINES -DISAL_DEPRECATED_INTERNAL $(INCLUDES) $(D) /W3
 AFLAGS     = -f win64 $(INCLUDES) $(D)
@@ -217,7 +217,7 @@ dll: bin isa-l.dll isa-l.h
 bin: ; -mkdir $@
 
 isa-l_static.lib: $(objs)
-	lib -out:$@ @<<
+	lib /LTCG -out:$@ @<<
 $?
 <<
 

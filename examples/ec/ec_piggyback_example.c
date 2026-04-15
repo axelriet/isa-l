@@ -186,6 +186,7 @@ encode_data_sparse(const int k, const int k2, const int p, const int len, u8 *g_
 }
 
 int
+__cdecl
 main(int argc, char *argv[])
 {
         int i, j, m, c, e, ret;

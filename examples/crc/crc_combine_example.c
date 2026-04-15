@@ -366,6 +366,7 @@ test_combine64(uint8_t *inp, size_t len, uint64_t poly, int reflected,
 #define NMAX_SIZE (NMAX * N4k)
 
 int
+__cdecl
 main(int argc, char *argv[])
 {
         int i;

@@ -1008,6 +1008,7 @@ decompress_file_cleanup:
 }
 
 int
+__cdecl
 main(int argc, char *argv[])
 {
         int c;
