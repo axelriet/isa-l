@@ -201,8 +201,8 @@ objs = \
 	bin\mem_multibinary.obj
 
 INCLUDES   = -I./ -Ierasure_code/ -Iraid/ -Icrc/ -Iigzip/ -Iprograms/ -Imem/ -Imisc/ -Iinclude/ -Itests/fuzz/ -Iexamples/ec/
-CFLAGS_REL = -O2 -DNDEBUG /Z7 /Gy /Oi /GF /Ot /Ob2 /Oy /MT /sdl- /GS- /arch:AVX2 /GL
-CFLAGS_DBG = -Od -DDEBUG /Z7 /MTd /GS- /Gy- /arch:AVX2 /sdl- /Oy
+CFLAGS_REL = -O2 -DNDEBUG /Z7 /Gy /Oi /GF /Ot /Ob2 /Oy /MT /sdl- /GS- /arch:AVX2 /GL /Gz
+CFLAGS_DBG = -Od -DDEBUG /Z7 /MTd /GS- /Gy- /arch:AVX2 /sdl- /Oy /Gz
 LINKFLAGS  = -nologo -incremental:no -debug
 CFLAGS     = $(CFLAGS_REL) -nologo -D_USE_MATH_DEFINES -DISAL_DEPRECATED_INTERNAL $(INCLUDES) $(D) /W3
 AFLAGS     = -f win64 $(INCLUDES) $(D)
@@ -378,6 +378,7 @@ isa-l.h:
 	@echo #define ISAL_VERSION ISAL_MAKE_VERSION(ISAL_MAJOR_VERSION, ISAL_MINOR_VERSION, ISAL_PATCH_VERSION)>> $@
 	@echo.>> $@
 	@echo #ifndef RC_INVOKED>> $@
+	@echo #pragma call(push, __stdcall)>> $@
 	@echo #include ^<include/crc.h^>>> $@
 	@echo #include ^<include/crc64.h^>>> $@
 	@echo #include ^<include/erasure_code.h^>>> $@
@@ -386,6 +387,7 @@ isa-l.h:
 	@echo #include ^<include/isal_api.h^>>> $@
 	@echo #include ^<include/mem_routines.h^>>> $@
 	@echo #include ^<include/raid.h^>>> $@
+	@echo #pragma call(pop)>> $@
 	@echo #endif // RC_INVOKED>> $@
 	@echo #endif //_ISAL_H_>> $@
 

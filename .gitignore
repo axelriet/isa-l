@@ -6,6 +6,7 @@
 *.dll
 *.exp
 *.lib
+*.res
 bin
 
 # Autobuild
