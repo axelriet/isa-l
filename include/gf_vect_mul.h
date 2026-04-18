@@ -110,6 +110,7 @@ gf_vect_mul_avx(int len, unsigned char *gftbl, void *src, void *dest);
  */
 
 void
+ISA_L_CALLING_CONVENTION
 gf_vect_mul_init(unsigned char c, unsigned char *gftbl);
 
 /**
@@ -123,6 +124,7 @@ gf_vect_mul_init(unsigned char c, unsigned char *gftbl);
  */
 
 void
+ISA_L_CALLING_CONVENTION
 gf_vect_mul_init_base(unsigned char c, unsigned char *gftbl);
 
 /**
@@ -146,6 +148,7 @@ gf_vect_mul_init_base(unsigned char c, unsigned char *gftbl);
  */
 
 int
+ISA_L_CALLING_CONVENTION
 gf_vect_mul(int len, unsigned char *gftbl, void *src, void *dest);
 
 /**
@@ -168,6 +171,7 @@ gf_vect_mul(int len, unsigned char *gftbl, void *src, void *dest);
  */
 
 int
+ISA_L_CALLING_CONVENTION
 gf_vect_mul_base(int len, unsigned char *gftbl, unsigned char *src, unsigned char *dest);
 
 #ifdef __cplusplus

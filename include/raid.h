@@ -62,6 +62,7 @@ extern "C" {
  */
 
 int
+ISA_L_CALLING_CONVENTION
 xor_gen(int vects, int len, void **array);
 
 /**
@@ -79,6 +80,7 @@ xor_gen(int vects, int len, void **array);
  */
 
 int
+ISA_L_CALLING_CONVENTION
 xor_check(int vects, int len, void **array);
 
 /**
@@ -99,6 +101,7 @@ xor_check(int vects, int len, void **array);
  */
 
 int
+ISA_L_CALLING_CONVENTION
 pq_gen(int vects, int len, void **array);
 
 /**
@@ -118,6 +121,7 @@ pq_gen(int vects, int len, void **array);
  */
 
 int
+ISA_L_CALLING_CONVENTION
 pq_check(int vects, int len, void **array);
 
 /* Arch specific versions */
@@ -291,6 +295,7 @@ pq_gen_base(int vects, int len, void **array);
  */
 
 int
+ISA_L_CALLING_CONVENTION
 xor_gen_base(int vects, int len, void **array);
 
 /**
@@ -305,6 +310,7 @@ xor_gen_base(int vects, int len, void **array);
  */
 
 int
+ISA_L_CALLING_CONVENTION
 xor_check_base(int vects, int len, void **array);
 
 /**
@@ -321,6 +327,7 @@ xor_check_base(int vects, int len, void **array);
  */
 
 int
+ISA_L_CALLING_CONVENTION
 pq_check_base(int vects, int len, void **array);
 
 #ifdef __cplusplus

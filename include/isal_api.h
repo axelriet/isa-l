@@ -90,6 +90,7 @@ extern "C" {
  * @return library version string
  */
 const char *
+ISA_L_CALLING_CONVENTION
 isal_get_version_str(void);
 
 /**
@@ -101,6 +102,7 @@ isal_get_version_str(void);
  * @return library version number
  */
 unsigned
+ISA_L_CALLING_CONVENTION
 isal_get_version(void);
 
 #ifdef __cplusplus

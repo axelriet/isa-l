@@ -54,6 +54,7 @@ extern "C" {
  *           other - region has non zero bytes
  */
 int
+ISA_L_CALLING_CONVENTION
 isal_zero_detect(void *mem, size_t len);
 
 #ifdef __cplusplus

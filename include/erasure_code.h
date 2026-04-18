@@ -72,6 +72,7 @@ extern "C" {
  */
 
 void
+ISA_L_CALLING_CONVENTION
 ec_init_tables(int k, int rows, unsigned char *a, unsigned char *gftbls);
 
 /**
@@ -81,6 +82,7 @@ ec_init_tables(int k, int rows, unsigned char *a, unsigned char *gftbls);
  */
 
 void
+ISA_L_CALLING_CONVENTION
 ec_init_tables_base(int k, int rows, unsigned char *a, unsigned char *gftbls);
 
 /**
@@ -106,6 +108,7 @@ ec_init_tables_base(int k, int rows, unsigned char *a, unsigned char *gftbls);
  */
 
 void
+ISA_L_CALLING_CONVENTION
 ec_encode_data(int len, int k, int rows, unsigned char *gftbls, unsigned char **data,
                unsigned char **coding);
 
@@ -116,6 +119,7 @@ ec_encode_data(int len, int k, int rows, unsigned char *gftbls, unsigned char **
  * Param 'gftbls' must come from the output from ec_init_tables_base().
  */
 void
+ISA_L_CALLING_CONVENTION
 ec_encode_data_base(int len, int k, int rows, unsigned char *gftbls, unsigned char **data,
                     unsigned char **coding);
 
@@ -143,6 +147,7 @@ ec_encode_data_base(int len, int k, int rows, unsigned char *gftbls, unsigned ch
  * @returns none
  */
 void
+ISA_L_CALLING_CONVENTION
 ec_encode_data_update(int len, int k, int rows, int vec_i, unsigned char *gftbls,
                       unsigned char *data, unsigned char **coding);
 
@@ -154,6 +159,7 @@ ec_encode_data_update(int len, int k, int rows, int vec_i, unsigned char *gftbls
  */
 
 void
+ISA_L_CALLING_CONVENTION
 ec_encode_data_update_base(int len, int k, int rows, int vec_i, unsigned char *gftbls,
                            unsigned char *data, unsigned char **coding);
 
@@ -179,6 +185,7 @@ ec_encode_data_update_base(int len, int k, int rows, int vec_i, unsigned char *g
  */
 
 void
+ISA_L_CALLING_CONVENTION
 gf_vect_dot_prod_base(int len, int vlen, unsigned char *gftbls, unsigned char **src,
                       unsigned char *dest);
 
@@ -204,6 +211,7 @@ gf_vect_dot_prod_base(int len, int vlen, unsigned char *gftbls, unsigned char **
  */
 
 void
+ISA_L_CALLING_CONVENTION
 gf_vect_dot_prod(int len, int vlen, unsigned char *gftbls, unsigned char **src,
                  unsigned char *dest);
 
@@ -231,6 +239,7 @@ gf_vect_dot_prod(int len, int vlen, unsigned char *gftbls, unsigned char **src,
  */
 
 void
+ISA_L_CALLING_CONVENTION
 gf_vect_mad(int len, int vec, int vec_i, unsigned char *gftbls, unsigned char *src,
             unsigned char *dest);
 
@@ -242,6 +251,7 @@ gf_vect_mad(int len, int vec, int vec_i, unsigned char *gftbls, unsigned char *s
  */
 
 void
+ISA_L_CALLING_CONVENTION
 gf_vect_mad_base(int len, int vec, int vec_i, unsigned char *gftbls, unsigned char *src,
                  unsigned char *dest);
 
@@ -1062,6 +1072,7 @@ gf_6vect_mad_avx2(int len, int vec, int vec_i, unsigned char *gftbls, unsigned c
  */
 
 unsigned char
+ISA_L_CALLING_CONVENTION
 gf_mul(unsigned char a, unsigned char b);
 
 /**
@@ -1072,6 +1083,7 @@ gf_mul(unsigned char a, unsigned char b);
  */
 
 unsigned char
+ISA_L_CALLING_CONVENTION
 gf_inv(unsigned char a);
 
 /**
@@ -1099,6 +1111,7 @@ gf_inv(unsigned char a);
  */
 
 void
+ISA_L_CALLING_CONVENTION
 gf_gen_rs_matrix(unsigned char *a, int m, int k);
 
 /**
@@ -1115,6 +1128,7 @@ gf_gen_rs_matrix(unsigned char *a, int m, int k);
  */
 
 void
+ISA_L_CALLING_CONVENTION
 gf_gen_cauchy1_matrix(unsigned char *a, int m, int k);
 
 /**
@@ -1130,6 +1144,7 @@ gf_gen_cauchy1_matrix(unsigned char *a, int m, int k);
  */
 
 int
+ISA_L_CALLING_CONVENTION
 gf_invert_matrix(unsigned char *in, unsigned char *out, const int n);
 
 /*************************************************************/

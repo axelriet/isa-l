@@ -560,6 +560,7 @@ struct inflate_state {
  * @param histogram: The returned histogram of lit/len/dist symbols.
  */
 void
+ISA_L_CALLING_CONVENTION
 isal_update_histogram(uint8_t *in_stream, int length, struct isal_huff_histogram *histogram);
 
 /**
@@ -573,6 +574,7 @@ isal_update_histogram(uint8_t *in_stream, int length, struct isal_huff_histogram
  * @returns Returns a non zero value if an invalid huffman code was created.
  */
 int
+ISA_L_CALLING_CONVENTION
 isal_create_hufftables(struct isal_hufftables *hufftables, struct isal_huff_histogram *histogram);
 
 /**
@@ -586,6 +588,7 @@ isal_create_hufftables(struct isal_hufftables *hufftables, struct isal_huff_hist
  * @returns Returns a non zero value if an invalid huffman code was created.
  */
 int
+ISA_L_CALLING_CONVENTION
 isal_create_hufftables_subset(struct isal_hufftables *hufftables,
                               struct isal_huff_histogram *histogram);
 
@@ -596,6 +599,7 @@ isal_create_hufftables_subset(struct isal_hufftables *hufftables,
  * @returns none
  */
 void
+ISA_L_CALLING_CONVENTION
 isal_deflate_init(struct isal_zstream *stream);
 
 /**
@@ -608,6 +612,7 @@ isal_deflate_init(struct isal_zstream *stream);
  * @returns none
  */
 void
+ISA_L_CALLING_CONVENTION
 isal_deflate_reset(struct isal_zstream *stream);
 
 /**
@@ -616,6 +621,7 @@ isal_deflate_reset(struct isal_zstream *stream);
  * @param gz_hdr: Gzip header to initialize.
  */
 void
+ISA_L_CALLING_CONVENTION
 isal_gzip_header_init(struct isal_gzip_header *gz_hdr);
 
 /**
@@ -624,6 +630,7 @@ isal_gzip_header_init(struct isal_gzip_header *gz_hdr);
  * @param z_hdr: zlib header to initialize.
  */
 void
+ISA_L_CALLING_CONVENTION
 isal_zlib_header_init(struct isal_zlib_header *z_hdr);
 
 /**
@@ -642,6 +649,7 @@ isal_zlib_header_init(struct isal_zlib_header *z_hdr);
  * buffer.
  */
 uint32_t
+ISA_L_CALLING_CONVENTION
 isal_write_gzip_header(struct isal_zstream *stream, struct isal_gzip_header *gz_hdr);
 
 /**
@@ -660,6 +668,7 @@ isal_write_gzip_header(struct isal_zstream *stream, struct isal_gzip_header *gz_
  * buffer.
  */
 uint32_t
+ISA_L_CALLING_CONVENTION
 isal_write_zlib_header(struct isal_zstream *stream, struct isal_zlib_header *z_hdr);
 
 /**
@@ -683,6 +692,7 @@ isal_write_zlib_header(struct isal_zstream *stream, struct isal_zlib_header *z_h
  * allowed or an invalid input is provided.
  */
 int
+ISA_L_CALLING_CONVENTION
 isal_deflate_set_hufftables(struct isal_zstream *stream, struct isal_hufftables *hufftables,
                             int type);
 
@@ -693,6 +703,7 @@ isal_deflate_set_hufftables(struct isal_zstream *stream, struct isal_hufftables 
  * @returns none
  */
 void
+ISA_L_CALLING_CONVENTION
 isal_deflate_stateless_init(struct isal_zstream *stream);
 
 /**
@@ -710,6 +721,7 @@ isal_deflate_stateless_init(struct isal_zstream *stream);
  *          ISAL_INVALID_STATE (dictionary could not be set)
  */
 int
+ISA_L_CALLING_CONVENTION
 isal_deflate_set_dict(struct isal_zstream *stream, uint8_t *dict, uint32_t dict_len);
 
 /** @brief Structure for holding processed dictionary information */
@@ -742,6 +754,7 @@ struct isal_dict {
  *          ISAL_INVALID_STATE (dictionary could not be processed)
  */
 int
+ISA_L_CALLING_CONVENTION
 isal_deflate_process_dict(struct isal_zstream *stream, struct isal_dict *dict_str, uint8_t *dict,
                           uint32_t dict_len);
 
@@ -763,6 +776,7 @@ isal_deflate_process_dict(struct isal_zstream *stream, struct isal_dict *dict_st
  *          ISAL_INVALID_STATE or other (dictionary could not be reset)
  */
 int
+ISA_L_CALLING_CONVENTION
 isal_deflate_reset_dict(struct isal_zstream *stream, struct isal_dict *dict_str);
 
 /**
@@ -820,6 +834,7 @@ isal_deflate_reset_dict(struct isal_zstream *stream, struct isal_dict *dict_str)
  *         ISAL_INVALID_LEVEL_BUF (if the level buffer is not large enough).
  */
 int
+ISA_L_CALLING_CONVENTION
 isal_deflate(struct isal_zstream *stream);
 
 /**
@@ -850,6 +865,7 @@ isal_deflate(struct isal_zstream *stream);
  *         STATELESS_OVERFLOW (if output buffer will not fit output).
  */
 int
+ISA_L_CALLING_CONVENTION
 isal_deflate_stateless(struct isal_zstream *stream);
 
 /******************************************************************************/
@@ -862,6 +878,7 @@ isal_deflate_stateless(struct isal_zstream *stream);
  * @returns none
  */
 void
+ISA_L_CALLING_CONVENTION
 isal_inflate_init(struct inflate_state *state);
 
 /**
@@ -871,6 +888,7 @@ isal_inflate_init(struct inflate_state *state);
  * @returns none
  */
 void
+ISA_L_CALLING_CONVENTION
 isal_inflate_reset(struct inflate_state *state);
 
 /**
@@ -887,6 +905,7 @@ isal_inflate_reset(struct inflate_state *state);
  *          ISAL_INVALID_STATE (dictionary could not be set)
  */
 int
+ISA_L_CALLING_CONVENTION
 isal_inflate_set_dict(struct inflate_state *state, uint8_t *dict, uint32_t dict_len);
 
 /**
@@ -911,6 +930,7 @@ isal_inflate_set_dict(struct inflate_state *state, uint8_t *dict, uint32_t dict_
  *          ISAL_INCORRECT_CHECKSUM (gzip header checksum was incorrect)
  */
 int
+ISA_L_CALLING_CONVENTION
 isal_read_gzip_header(struct inflate_state *state, struct isal_gzip_header *gz_hdr);
 
 /**
@@ -927,6 +947,7 @@ isal_read_gzip_header(struct inflate_state *state, struct isal_gzip_header *gz_h
  *          ISAL_INCORRECT_CHECKSUM (zlib header checksum was incorrect)
  */
 int
+ISA_L_CALLING_CONVENTION
 isal_read_zlib_header(struct inflate_state *state, struct isal_zlib_header *zlib_hdr);
 
 /**
@@ -976,6 +997,7 @@ isal_read_zlib_header(struct inflate_state *state, struct isal_zlib_header *zlib
  */
 
 int
+ISA_L_CALLING_CONVENTION
 isal_inflate(struct inflate_state *state);
 
 /**
@@ -999,6 +1021,7 @@ isal_inflate(struct inflate_state *state);
  *         ISAL_INCORRECT_CHECKSUM.
  */
 int
+ISA_L_CALLING_CONVENTION
 isal_inflate_stateless(struct inflate_state *state);
 
 /******************************************************************************/
@@ -1017,6 +1040,7 @@ isal_inflate_stateless(struct inflate_state *state);
  * @returns 32-bit Adler-32 checksum
  */
 uint32_t
+ISA_L_CALLING_CONVENTION
 isal_adler32(uint32_t init, const unsigned char *buf, uint64_t len);
 
 #ifdef __cplusplus

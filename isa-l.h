@@ -13,7 +13,7 @@
 #define ISAL_VERSION ISAL_MAKE_VERSION(ISAL_MAJOR_VERSION, ISAL_MINOR_VERSION, ISAL_PATCH_VERSION)
 
 #ifndef RC_INVOKED
-#pragma call(push, __stdcall)
+#define ISA_L_CALLING_CONVENTION __cdecl
 #include <include/crc.h>
 #include <include/crc64.h>
 #include <include/erasure_code.h>
@@ -22,6 +22,5 @@
 #include <include/isal_api.h>
 #include <include/mem_routines.h>
 #include <include/raid.h>
-#pragma call(pop)
 #endif // RC_INVOKED
 #endif //_ISAL_H_

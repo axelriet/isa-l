@@ -52,6 +52,7 @@ extern "C" {
  * @returns 64 bit CRC
  */
 uint64_t
+ISA_L_CALLING_CONVENTION
 crc64_ecma_refl(uint64_t init_crc,        //!< initial CRC value, 64 bits
                 const unsigned char *buf, //!< buffer to calculate CRC on
                 uint64_t len              //!< buffer length in bytes (64-bit data)
@@ -66,6 +67,7 @@ crc64_ecma_refl(uint64_t init_crc,        //!< initial CRC value, 64 bits
  * @returns 64 bit CRC
  */
 uint64_t
+ISA_L_CALLING_CONVENTION
 crc64_ecma_norm(uint64_t init_crc,        //!< initial CRC value, 64 bits
                 const unsigned char *buf, //!< buffer to calculate CRC on
                 uint64_t len              //!< buffer length in bytes (64-bit data)
@@ -80,6 +82,7 @@ crc64_ecma_norm(uint64_t init_crc,        //!< initial CRC value, 64 bits
  * @returns 64 bit CRC
  */
 uint64_t
+ISA_L_CALLING_CONVENTION
 crc64_iso_refl(uint64_t init_crc,        //!< initial CRC value, 64 bits
                const unsigned char *buf, //!< buffer to calculate CRC on
                uint64_t len              //!< buffer length in bytes (64-bit data)
@@ -94,6 +97,7 @@ crc64_iso_refl(uint64_t init_crc,        //!< initial CRC value, 64 bits
  * @returns 64 bit CRC
  */
 uint64_t
+ISA_L_CALLING_CONVENTION
 crc64_iso_norm(uint64_t init_crc,        //!< initial CRC value, 64 bits
                const unsigned char *buf, //!< buffer to calculate CRC on
                uint64_t len              //!< buffer length in bytes (64-bit data)
@@ -108,6 +112,7 @@ crc64_iso_norm(uint64_t init_crc,        //!< initial CRC value, 64 bits
  * @returns 64 bit CRC
  */
 uint64_t
+ISA_L_CALLING_CONVENTION
 crc64_jones_refl(uint64_t init_crc,        //!< initial CRC value, 64 bits
                  const unsigned char *buf, //!< buffer to calculate CRC on
                  uint64_t len              //!< buffer length in bytes (64-bit data)
@@ -122,6 +127,7 @@ crc64_jones_refl(uint64_t init_crc,        //!< initial CRC value, 64 bits
  * @returns 64 bit CRC
  */
 uint64_t
+ISA_L_CALLING_CONVENTION
 crc64_jones_norm(uint64_t init_crc,        //!< initial CRC value, 64 bits
                  const unsigned char *buf, //!< buffer to calculate CRC on
                  uint64_t len              //!< buffer length in bytes (64-bit data)
@@ -136,6 +142,7 @@ crc64_jones_norm(uint64_t init_crc,        //!< initial CRC value, 64 bits
  * @returns 64 bit CRC
  */
 uint64_t
+ISA_L_CALLING_CONVENTION
 crc64_rocksoft_refl(uint64_t init_crc,        //!< initial CRC value, 64 bits
                     const unsigned char *buf, //!< buffer to calculate CRC on
                     uint64_t len              //!< buffer length in bytes (64-bit data)
@@ -150,6 +157,7 @@ crc64_rocksoft_refl(uint64_t init_crc,        //!< initial CRC value, 64 bits
  * @returns 64 bit CRC
  */
 uint64_t
+ISA_L_CALLING_CONVENTION
 crc64_rocksoft_norm(uint64_t init_crc,        //!< initial CRC value, 64 bits
                     const unsigned char *buf, //!< buffer to calculate CRC on
                     uint64_t len              //!< buffer length in bytes (64-bit data)
@@ -165,6 +173,7 @@ crc64_rocksoft_norm(uint64_t init_crc,        //!< initial CRC value, 64 bits
  */
 
 uint64_t
+ISA_L_CALLING_CONVENTION
 crc64_ecma_refl_by8(uint64_t init_crc,        //!< initial CRC value, 64 bits
                     const unsigned char *buf, //!< buffer to calculate CRC on
                     uint64_t len              //!< buffer length in bytes (64-bit data)
@@ -178,6 +187,7 @@ crc64_ecma_refl_by8(uint64_t init_crc,        //!< initial CRC value, 64 bits
  */
 
 uint64_t
+ISA_L_CALLING_CONVENTION
 crc64_ecma_norm_by8(uint64_t init_crc,        //!< initial CRC value, 64 bits
                     const unsigned char *buf, //!< buffer to calculate CRC on
                     uint64_t len              //!< buffer length in bytes (64-bit data)
@@ -188,6 +198,7 @@ crc64_ecma_norm_by8(uint64_t init_crc,        //!< initial CRC value, 64 bits
  * @returns 64 bit CRC
  */
 uint64_t
+ISA_L_CALLING_CONVENTION
 crc64_ecma_refl_base(uint64_t init_crc,        //!< initial CRC value, 64 bits
                      const unsigned char *buf, //!< buffer to calculate CRC on
                      uint64_t len              //!< buffer length in bytes (64-bit data)
@@ -198,6 +209,7 @@ crc64_ecma_refl_base(uint64_t init_crc,        //!< initial CRC value, 64 bits
  * @returns 64 bit CRC
  */
 uint64_t
+ISA_L_CALLING_CONVENTION
 crc64_ecma_norm_base(uint64_t init_crc,        //!< initial CRC value, 64 bits
                      const unsigned char *buf, //!< buffer to calculate CRC on
                      uint64_t len              //!< buffer length in bytes (64-bit data)
@@ -211,6 +223,7 @@ crc64_ecma_norm_base(uint64_t init_crc,        //!< initial CRC value, 64 bits
  */
 
 uint64_t
+ISA_L_CALLING_CONVENTION
 crc64_iso_refl_by8(uint64_t init_crc,        //!< initial CRC value, 64 bits
                    const unsigned char *buf, //!< buffer to calculate CRC on
                    uint64_t len              //!< buffer length in bytes (64-bit data)
@@ -224,6 +237,7 @@ crc64_iso_refl_by8(uint64_t init_crc,        //!< initial CRC value, 64 bits
  */
 
 uint64_t
+ISA_L_CALLING_CONVENTION
 crc64_iso_norm_by8(uint64_t init_crc,        //!< initial CRC value, 64 bits
                    const unsigned char *buf, //!< buffer to calculate CRC on
                    uint64_t len              //!< buffer length in bytes (64-bit data)
@@ -234,6 +248,7 @@ crc64_iso_norm_by8(uint64_t init_crc,        //!< initial CRC value, 64 bits
  * @returns 64 bit CRC
  */
 uint64_t
+ISA_L_CALLING_CONVENTION
 crc64_iso_refl_base(uint64_t init_crc,        //!< initial CRC value, 64 bits
                     const unsigned char *buf, //!< buffer to calculate CRC on
                     uint64_t len              //!< buffer length in bytes (64-bit data)
@@ -244,6 +259,7 @@ crc64_iso_refl_base(uint64_t init_crc,        //!< initial CRC value, 64 bits
  * @returns 64 bit CRC
  */
 uint64_t
+ISA_L_CALLING_CONVENTION
 crc64_iso_norm_base(uint64_t init_crc,        //!< initial CRC value, 64 bits
                     const unsigned char *buf, //!< buffer to calculate CRC on
                     uint64_t len              //!< buffer length in bytes (64-bit data)
@@ -257,6 +273,7 @@ crc64_iso_norm_base(uint64_t init_crc,        //!< initial CRC value, 64 bits
  */
 
 uint64_t
+ISA_L_CALLING_CONVENTION
 crc64_jones_refl_by8(uint64_t init_crc,        //!< initial CRC value, 64 bits
                      const unsigned char *buf, //!< buffer to calculate CRC on
                      uint64_t len              //!< buffer length in bytes (64-bit data)
@@ -270,6 +287,7 @@ crc64_jones_refl_by8(uint64_t init_crc,        //!< initial CRC value, 64 bits
  */
 
 uint64_t
+ISA_L_CALLING_CONVENTION
 crc64_jones_norm_by8(uint64_t init_crc,        //!< initial CRC value, 64 bits
                      const unsigned char *buf, //!< buffer to calculate CRC on
                      uint64_t len              //!< buffer length in bytes (64-bit data)
@@ -280,6 +298,7 @@ crc64_jones_norm_by8(uint64_t init_crc,        //!< initial CRC value, 64 bits
  * @returns 64 bit CRC
  */
 uint64_t
+ISA_L_CALLING_CONVENTION
 crc64_jones_refl_base(uint64_t init_crc,        //!< initial CRC value, 64 bits
                       const unsigned char *buf, //!< buffer to calculate CRC on
                       uint64_t len              //!< buffer length in bytes (64-bit data)
@@ -290,6 +309,7 @@ crc64_jones_refl_base(uint64_t init_crc,        //!< initial CRC value, 64 bits
  * @returns 64 bit CRC
  */
 uint64_t
+ISA_L_CALLING_CONVENTION
 crc64_jones_norm_base(uint64_t init_crc,        //!< initial CRC value, 64 bits
                       const unsigned char *buf, //!< buffer to calculate CRC on
                       uint64_t len              //!< buffer length in bytes (64-bit data)
@@ -303,6 +323,7 @@ crc64_jones_norm_base(uint64_t init_crc,        //!< initial CRC value, 64 bits
  */
 
 uint64_t
+ISA_L_CALLING_CONVENTION
 crc64_rocksoft_refl_by8(uint64_t init_crc,        //!< initial CRC value, 64 bits
                         const unsigned char *buf, //!< buffer to calculate CRC on
                         uint64_t len              //!< buffer length in bytes (64-bit data)
@@ -313,6 +334,7 @@ crc64_rocksoft_refl_by8(uint64_t init_crc,        //!< initial CRC value, 64 bit
  * @returns 64 bit CRC
  */
 uint64_t
+ISA_L_CALLING_CONVENTION
 crc64_rocksoft_refl_base(uint64_t init_crc,        //!< initial CRC value, 64 bits
                          const unsigned char *buf, //!< buffer to calculate CRC on
                          uint64_t len              //!< buffer length in bytes (64-bit data)
@@ -326,6 +348,7 @@ crc64_rocksoft_refl_base(uint64_t init_crc,        //!< initial CRC value, 64 bi
  */
 
 uint64_t
+ISA_L_CALLING_CONVENTION
 crc64_rocksoft_norm_by8(uint64_t init_crc,        //!< initial CRC value, 64 bits
                         const unsigned char *buf, //!< buffer to calculate CRC on
                         uint64_t len              //!< buffer length in bytes (64-bit data)
@@ -336,6 +359,7 @@ crc64_rocksoft_norm_by8(uint64_t init_crc,        //!< initial CRC value, 64 bit
  * @returns 64 bit CRC
  */
 uint64_t
+ISA_L_CALLING_CONVENTION
 crc64_rocksoft_norm_base(uint64_t init_crc,        //!< initial CRC value, 64 bits
                          const unsigned char *buf, //!< buffer to calculate CRC on
                          uint64_t len              //!< buffer length in bytes (64-bit data)
