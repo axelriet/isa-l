@@ -2189,7 +2189,7 @@ isal_inflate_stateless(struct inflate_state *state)
                 else
                         ret = decode_huffman_code_block_stateless(state, start_out);
 
-                if (ret)
+                if (ret || !state->avail_in)
                         break;
                 if (state->block_state == ISAL_BLOCK_INPUT_DONE)
                         state->block_state = ISAL_BLOCK_FINISH;
