@@ -60,6 +60,9 @@ endif()
 
 # Enable building ISAL shim library
 option(ISAL_BUILD_ISAL_SHIM "Build the ISAL shim library" ON)
+
+# Enable building igzip CLI program
+option(ISAL_BUILD_IGZIP_CLI "Build the igzip command-line program" OFF)
 if(ISAL_BUILD_ISAL_SHIM)
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
@@ -116,6 +119,27 @@ if(ARCH_DEF)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D${ARCH_DEF}")
 endif()
 
+# On MinGW-w64, two measures are needed to prevent "32 bit pseudo relocation
+# out of range" runtime aborts (STATUS_STACK_BUFFER_OVERRUN / 0xc0000409).
+# ASLR can place system DLLs (e.g. ucrtbase.dll) more than 2 GB from the
+# binary, which overflows 32-bit pseudo-relocation deltas.
+#
+# 1. -fPIC at compile time makes GCC reference external C runtime data via
+#    the IAT (.refptr stubs) instead of 32-bit PC-relative references,
+#    eliminating pseudo-relocations from user-compiled object files.
+#
+# 2. --enable-runtime-pseudo-reloc-v2 at link time upgrades any residual
+#    pseudo-relocations (e.g. those baked into pre-compiled MinGW CRT startup
+#    objects such as libmingw32.a) from the 32-bit v1 format to the 64-bit v2
+#    format, which the MinGW runtime can apply regardless of address gap.
+if(WIN32 AND CMAKE_C_COMPILER_ID STREQUAL "GNU")
+    add_compile_options($<$<COMPILE_LANGUAGE:C>:-fPIC>)
+    set(CMAKE_EXE_LINKER_FLAGS
+        "${CMAKE_EXE_LINKER_FLAGS} -Wl,--enable-runtime-pseudo-reloc-v2")
+    set(CMAKE_SHARED_LINKER_FLAGS
+        "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--enable-runtime-pseudo-reloc-v2")
+endif()
+
 # Library version (semantic versioning)
 set(LIBISAL_VERSION_MAJOR 2)
 set(LIBISAL_VERSION_MINOR 32)
@@ -137,8 +161,12 @@ list(APPEND EXTERN_HEADERS include/test.h)
 # Build type option
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 
-# Use module definition file to explicitly control exported symbols
-if(MSVC AND BUILD_SHARED_LIBS)
+# Use module definition file to explicitly control exported symbols.
+# On Windows the .def file lists every public and arch-specific symbol, so the
+# linker creates proper export-table entries and import-library thunks for all
+# of them (including NASM-assembled functions, which the MinGW linker does not
+# auto-export).
+if(WIN32 AND BUILD_SHARED_LIBS)
     set(ISAL_DEF_FILE "${CMAKE_CURRENT_SOURCE_DIR}/isa-l.def")
 endif()
 
@@ -165,9 +193,17 @@ set_target_properties(isal PROPERTIES
     SOVERSION ${LIBISAL_VERSION_MAJOR}
 )
 
-# Match Makefile.nmake naming convention
-if(MSVC)
-    set_target_properties(isal PROPERTIES OUTPUT_NAME "isa-l")
+# Match Makefile.nmake naming convention. On Windows the import table embeds
+# the DLL name from the .def LIBRARY directive (isa-l), so the produced DLL
+# must be named isa-l.dll for both MSVC and MinGW. Clearing PREFIX/IMPORT_PREFIX
+# stops MinGW from adding the "lib" prefix (libisa-l.dll), which would otherwise
+# not match the name recorded in the consumers' import tables.
+if(WIN32)
+    set_target_properties(isal PROPERTIES
+        OUTPUT_NAME "isa-l"
+        PREFIX ""
+        IMPORT_PREFIX ""
+    )
 endif()
 
 # Configure include directories for NASM assembly files
@@ -200,15 +236,40 @@ if(ISAL_BUILD_ISAL_SHIM)
     add_subdirectory(igzip/shim)
 endif()
 
+# Install targets
+include(GNUInstallDirs)
+
+# Build igzip CLI program
+if(ISAL_BUILD_IGZIP_CLI)
+    if(WIN32)
+        message(WARNING "ISAL_BUILD_IGZIP_CLI is not supported on Windows")
+    else()
+        add_executable(igzip_cli programs/igzip_cli.c)
+        set_target_properties(igzip_cli PROPERTIES
+            OUTPUT_NAME igzip
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/programs"
+        )
+        target_include_directories(igzip_cli PRIVATE
+            ${CMAKE_CURRENT_SOURCE_DIR}/include
+        )
+        target_link_libraries(igzip_cli PRIVATE isal)
+        install(TARGETS igzip_cli
+            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        )
+        if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/programs/igzip.1")
+            install(FILES programs/igzip.1
+                DESTINATION ${CMAKE_INSTALL_MANDIR}/man1
+            )
+        endif()
+    endif()
+endif() # ISAL_BUILD_IGZIP_CLI
+
 # Generate isa-l.h header
 set(ISAL_HEADER "${CMAKE_CURRENT_BINARY_DIR}/isa-l.h")
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/isa-l.h.in ${ISAL_HEADER} @ONLY)
 
 # Copy generated header to build interface dir for FetchContent support
 file(COPY ${ISAL_HEADER} DESTINATION "${BUILD_INTERFACE_INCLUDE_DIR}")
-
-# Install targets
-include(GNUInstallDirs)
 
 # add uninstall target
 configure_file(
@@ -295,4 +356,5 @@ message(STATUS "  Build tests        : ${ISAL_BUILD_TESTS}")
 message(STATUS "  Build perf tests   : ${ISAL_BUILD_PERF_TESTS}")
 message(STATUS "  Build fuzz tests   : ${ISAL_BUILD_FUZZ_TESTS}")
 message(STATUS "  Build ISAL shim    : ${ISAL_BUILD_ISAL_SHIM}")
+message(STATUS "  Build igzip CLI    : ${ISAL_BUILD_IGZIP_CLI}")
 message(STATUS "")

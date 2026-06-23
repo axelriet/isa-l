@@ -43,7 +43,9 @@ include crc/Makefile.am
 include igzip/Makefile.am
 include tests/fuzz/Makefile.am
 include examples/ec/Makefile.am
+if HAVE_PROGRAMS
 include programs/Makefile.am
+endif
 include mem/Makefile.am
 include misc/Makefile.am
 
@@ -56,10 +58,13 @@ lib_LTLIBRARIES = libisal.la
 pkginclude_HEADERS += $(sort ${extern_hdrs})
 libisal_la_SOURCES = ${lsrc}
 
+igzip_igzip_perf_SOURCES = igzip/igzip_perf.c
+
 if CPU_X86_64
 ARCH=-Dx86_64
 libisal_la_SOURCES += ${lsrc_x86_64}
 other_tests += ${other_tests_x86_64}
+igzip_igzip_perf_SOURCES += igzip/igzip_perf_misc.asm
 endif
 
 if CPU_AARCH64

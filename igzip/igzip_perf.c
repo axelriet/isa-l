@@ -30,6 +30,8 @@
 #define _FILE_OFFSET_BITS 64
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdint.h>
 #include <assert.h>
 #include <getopt.h>
 #include "huff_codes.h"
@@ -40,7 +42,51 @@
 
 #define BUF_SIZE 1024
 
-#define OPTARGS "hl:f:z:i:d:stub:y:w:o:D:"
+#define OPTARGS "hl:f:z:i:d:stub:y:w:o:D:c"
+
+#if defined(__x86_64__) || defined(_M_X64)
+static int show_cycles = 0; /* -c: show cycles/byte instead of throughput */
+#endif
+
+#if defined(__x86_64__) || defined(_M_X64)
+
+#ifdef _MSC_VER
+#include <intrin.h>
+#define run_cpuid(leaf, subleaf, regs) __cpuidex((int *) (regs), (int) (leaf), (int) (subleaf))
+#else
+#include <cpuid.h>
+static inline void
+run_cpuid(uint32_t leaf, uint32_t subleaf, uint32_t *regs)
+{
+        __cpuid_count(leaf, subleaf, regs[0], regs[1], regs[2], regs[3]);
+}
+#endif
+
+#define CPUID_LEAF_BRAND_START 0x80000002U
+#define CPUID_LEAF_BRAND_END   0x80000004U
+#define CPUID_LEAF_BRAND_NUM   (CPUID_LEAF_BRAND_END - CPUID_LEAF_BRAND_START + 1)
+#define MAX_BRAND_STRING_LEN   (CPUID_LEAF_BRAND_NUM * 4 * sizeof(uint32_t))
+
+static void
+get_cpu_brand(char *brand_str, size_t size)
+{
+        uint32_t regs[4];
+        uint32_t *p = (uint32_t *) brand_str;
+        unsigned i;
+
+        memset(brand_str, 0, size);
+        run_cpuid(0x80000000U, 0, regs);
+        if (regs[0] < CPUID_LEAF_BRAND_END)
+                return;
+        for (i = 0; i < CPUID_LEAF_BRAND_NUM; i++) {
+                run_cpuid(CPUID_LEAF_BRAND_START + i, 0, regs);
+                *p++ = regs[0];
+                *p++ = regs[1];
+                *p++ = regs[2];
+                *p++ = regs[3];
+        }
+}
+#endif /* __x86_64__ || _M_X64 */
 
 #define COMPRESSION_QUEUE_LIMIT 32
 #define UNSET                   -1
@@ -166,7 +212,11 @@ usage(void)
                                                                                                          "  -o <file>   output file to store compressed data (last one if multiple)\n"
                                                                                                          "  -b <size>   input buffer size, applies to stateful options (-f,-z,-s)\n"
                                                                                                          "  -y <type>   flush type: 0 (default: no flush), 1 (sync flush), 2 (full flush)\n"
-                                                                                                         "  -w <size>   log base 2 size of history window, between 9 and 15\n");
+                                                                                                         "  -w <size>   log base 2 size of history window, between 9 and 15\n"
+#if defined(__x86_64__) || defined(_M_X64)
+                                                                                                         "  -c          show cycles/byte instead of throughput\n"
+#endif
+        );
         exit(1);
 }
 
@@ -185,34 +235,97 @@ print_file_line(struct perf_info *info)
                100.0 * info->deflate_size / info->file_size);
 }
 
+#if defined(__x86_64__) || defined(_M_X64)
+/* Declared in igzip_perf_misc.asm */
+uint64_t
+measure_tsc(const uint64_t cycles);
+
+static double tsc_scale_ratio = 1.0; /* TSC ticks / core cycle */
+static double tsc_freq_mhz = 0.0;    /* TSC frequency in MHz */
+
+/* Return TSC-to-core-cycle scale factor. Wraps measure_tsc() with
+ * clock_gettime to derive TSC frequency from the same run, then computes
+ * core frequency as tsc_freq / ratio. */
+static double
+get_tsc_to_core_scale(double *tsc_freq_mhz_out)
+{
+        const uint64_t expected_cycles = 1000000000ULL;
+        const int num_loops = 16;
+        struct timespec t0, t1;
+        uint64_t tsc_ticks = 0;
+        double elapsed_s, ratio;
+        int i;
+
+        /* Warm up CPU */
+        for (i = 0; i < num_loops - 1; i++)
+                measure_tsc(expected_cycles);
+
+        clock_gettime(CLOCK_MONOTONIC, &t0);
+        tsc_ticks = measure_tsc(expected_cycles);
+        clock_gettime(CLOCK_MONOTONIC, &t1);
+
+        elapsed_s = (t1.tv_sec - t0.tv_sec) + (t1.tv_nsec - t0.tv_nsec) * 1e-9;
+        *tsc_freq_mhz_out = (double) tsc_ticks / elapsed_s / 1e6;
+
+        ratio = (double) tsc_ticks / (double) expected_cycles;
+        return ratio;
+}
+
+/* Compute core cycles for one iteration and cycles/byte from a completed
+ * perf measurement.  p->run_total is wall-clock nanoseconds;
+ * core_freq = tsc_freq / tsc_scale. */
+static void
+get_cycle_cost(const struct perf *p, size_t file_size, double *total_cycles_out, double *cpb_out)
+{
+        double core_freq_hz = tsc_freq_mhz * 1e6 / tsc_scale_ratio;
+        double total_core_cycles = (double) p->run_total * 1e-9 * core_freq_hz;
+
+        *total_cycles_out = total_core_cycles / (double) p->iterations;
+        *cpb_out = *total_cycles_out / (double) file_size;
+}
+#endif /* __x86_64__ || _M_X64 */
+
 void
-print_deflate_perf_line(struct perf_info *info)
+print_perf_line(struct perf_info *info, const char *direction)
 {
         if (info->strategy.mode == ISAL_STATELESS)
-                printf("    isal_stateless_deflate-> ");
+                printf("    isal_stateless_%s-> ", direction);
         else if (info->strategy.mode == ISAL_STATEFUL)
-                printf("    isal_stateful_deflate->  ");
+                printf("    isal_stateful_%s->  ", direction);
         else if (info->strategy.mode == ISAL_WITH_DICTIONARY)
-                printf("    isal_dictionary_deflate-> ");
+                printf("    isal_dictionary_%s-> ", direction);
         else if (info->strategy.mode == ZLIB)
-                printf("    zlib_deflate->           ");
+                printf("    zlib_%s->           ", direction);
 
+#if defined(__x86_64__) || defined(_M_X64)
+        if (show_cycles) {
+                double total_cycles, cpb;
+
+                get_cycle_cost(&info->start, info->file_size, &total_cycles, &cpb);
+                printf("cycles: %.0f  cycles/byte: %.2f\n", total_cycles, cpb);
+                return;
+        }
+#endif
         perf_print(info->start, info->file_size);
 }
 
-void
-print_inflate_perf_line(struct perf_info *info)
+static void
+print_cpu_freq(void)
 {
-        if (info->inflate_mode == ISAL_STATELESS)
-                printf("    isal_stateless_inflate-> ");
-        else if (info->inflate_mode == ISAL_STATEFUL)
-                printf("    isal_stateful_inflate->  ");
-        else if (info->inflate_mode == ISAL_WITH_DICTIONARY)
-                printf("    isal_dictionary_inflate-> ");
-        else if (info->inflate_mode == ZLIB)
-                printf("    zlib_inflate->           ");
+#if defined(__x86_64__) || defined(_M_X64)
+        double core_freq_mhz;
+        char brand_str[MAX_BRAND_STRING_LEN + 1];
 
-        perf_print(info->start, info->file_size);
+        tsc_scale_ratio = get_tsc_to_core_scale(&tsc_freq_mhz);
+        core_freq_mhz = tsc_freq_mhz / tsc_scale_ratio;
+        if (show_cycles)
+                printf("cpu info-> TSC to core cycle ratio: %.3f\n", tsc_scale_ratio);
+        printf("cpu info-> freq:  %.0f MHz (%.2f GHz)\n", core_freq_mhz, core_freq_mhz / 1000.0);
+
+        get_cpu_brand(brand_str, sizeof(brand_str));
+        if (brand_str[0] != '\0')
+                printf("cpu info-> model: %s\n", brand_str);
+#endif /* __x86_64__ || _M_X64 */
 }
 
 int
@@ -774,6 +887,13 @@ main(int argc, char *argv[])
                 case 'o':
                         outfile = optarg;
                         break;
+                case 'c':
+#if defined(__x86_64__) || defined(_M_X64)
+                        show_cycles = 1;
+#else
+                        fprintf(stderr, "Warning: -c (cycles/byte) is only supported on x86_64\n");
+#endif
+                        break;
                 case 'h':
                 default:
                         usage();
@@ -856,6 +976,8 @@ main(int argc, char *argv[])
         }
         fclose(in);
 
+        print_cpu_freq();
+
         for (i = 0; i < compression_queue_size; i++) {
                 if (i > 0)
                         printf("\n\n");
@@ -894,7 +1016,7 @@ main(int argc, char *argv[])
 
                 print_file_line(&info);
                 printf("\n");
-                print_deflate_perf_line(&info);
+                print_perf_line(&info, "deflate");
                 printf("\n");
 
                 if (outfile != NULL && i + 1 == compression_queue_size) {
@@ -923,7 +1045,7 @@ main(int argc, char *argv[])
                         if (ret)
                                 printf("    Error in isal stateless inflate\n");
                         else
-                                print_inflate_perf_line(&info);
+                                print_perf_line(&info, "inflate");
                 }
 
                 if (inflate_strat.stateful) {
@@ -938,7 +1060,7 @@ main(int argc, char *argv[])
                         if (ret)
                                 printf("    Error in isal stateful inflate\n");
                         else
-                                print_inflate_perf_line(&info);
+                                print_perf_line(&info, "inflate");
                 }
 
                 if (inflate_strat.zlib) {
@@ -949,7 +1071,7 @@ main(int argc, char *argv[])
                         if (ret)
                                 printf("    Error in zlib inflate\n");
                         else
-                                print_inflate_perf_line(&info);
+                                print_perf_line(&info, "inflate");
                 }
         }
 

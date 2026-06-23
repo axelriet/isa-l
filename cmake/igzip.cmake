@@ -147,7 +147,6 @@ if(ISAL_BUILD_PERF_TESTS)
         igzip_hist_perf
         igzip_perf
         igzip_semi_dyn_file_perf
-        igzip_build_hash_table_perf
     )
 
     # Create performance test executables
@@ -156,6 +155,13 @@ if(ISAL_BUILD_PERF_TESTS)
         target_link_libraries(${test} PRIVATE isal)
         target_include_directories(${test} PRIVATE include igzip)
     endforeach()
+
+    # igzip_perf needs the assembly helper for TSC measurement (x86_64 only)
+    if(CPU_X86_64)
+        target_sources(igzip_perf PRIVATE igzip/igzip_perf_misc.asm)
+        set_source_files_properties(igzip/igzip_perf_misc.asm PROPERTIES
+            INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/include;${CMAKE_SOURCE_DIR}/igzip")
+    endif()
 
     # Add zlib dependency for igzip_perf
     find_package(ZLIB REQUIRED)
