@@ -28,7 +28,7 @@ cmake_minimum_required(VERSION 3.12)
 cmake_policy(VERSION 3.12)
 
 project(ISA-L
-    VERSION 2.32.0
+    VERSION 2.32.1
     DESCRIPTION "Intel's ISA-L (Intelligent Storage Acceleration Library)"
     LANGUAGES C
 )
@@ -94,6 +94,8 @@ if(CPU_X86_64)
     # Configure NASM flags
     if(WIN32)
         set(CMAKE_ASM_NASM_FLAGS "-f win64")
+    elseif(APPLE)
+        set(CMAKE_ASM_NASM_FLAGS "-f macho64 --prefix=_")
     else()
         set(CMAKE_ASM_NASM_FLAGS "-f elf64 -D LINUX")
     endif()
@@ -143,7 +145,7 @@ endif()
 # Library version (semantic versioning)
 set(LIBISAL_VERSION_MAJOR 2)
 set(LIBISAL_VERSION_MINOR 32)
-set(LIBISAL_VERSION_PATCH 0)
+set(LIBISAL_VERSION_PATCH 1)
 
 # Include CMake modules for each library component
 include(cmake/erasure_code.cmake)

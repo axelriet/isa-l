@@ -36,11 +36,7 @@
 #include <intrin.h>
 #endif
 
-#define MAX_WRITE_BITS_SIZE  8
-#define FORCE_FLUSH          64
-#define MIN_OBUF_SIZE        224
-#define NON_EMPTY_BLOCK_SIZE 6
-#define MAX_SYNC_FLUSH_SIZE  NON_EMPTY_BLOCK_SIZE + MAX_WRITE_BITS_SIZE
+#define FORCE_FLUSH 64
 
 #include "huffman.h"
 #include "bitbuf2.h"
@@ -1166,7 +1162,7 @@ isal_write_zlib_header(struct isal_zstream *stream, struct isal_zlib_header *z_h
         out_buf[1] = flg;
 
         if (dict_flag)
-                store_le_u32(out_buf + 2, z_hdr->dict_id);
+                store_be_u32(out_buf + 2, z_hdr->dict_id);
 
         stream->next_out += hdr_size;
         stream->total_out += hdr_size;
@@ -1749,7 +1745,6 @@ write_stream_header_stateless(struct isal_zstream *stream)
         // Create a 10-byte buffer. Since the gzip header is almost fixed (9 of 10
         // bytes are fixed) use it to initialize the buffer.
         uint8_t buffer[10] = { 0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff };
-        uint32_t next_flag;
 
         if (stream->internal_state.has_wrap_hdr)
                 return COMP_OK;
@@ -1757,12 +1752,10 @@ write_stream_header_stateless(struct isal_zstream *stream)
         if (stream->gzip_flag == IGZIP_ZLIB) {
                 hdr_bytes = zlib_hdr_bytes;
                 _zlib_header_in_buffer(stream, buffer);
-                next_flag = IGZIP_ZLIB_NO_HDR;
         } else {
                 hdr_bytes = gzip_hdr_bytes;
                 if (stream->level == 0)
                         buffer[8] = 0x04; // Fastest algorithm in xfl flag
-                next_flag = IGZIP_GZIP_NO_HDR;
         }
 
         if (hdr_bytes >= stream->avail_out)
@@ -1775,7 +1768,6 @@ write_stream_header_stateless(struct isal_zstream *stream)
 
         stream->next_out += hdr_bytes;
         stream->internal_state.has_wrap_hdr = 1;
-        stream->gzip_flag = next_flag;
 
         return COMP_OK;
 }

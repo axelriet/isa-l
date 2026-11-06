@@ -3,7 +3,7 @@
 
 AC_PREREQ(2.69)
 AC_INIT([libisal],
-        [2.32.0],
+        [2.32.1],
         [https://github.com/intel/isa-l/issues],
         [isa-l])
 AC_CONFIG_SRCDIR([])
@@ -45,7 +45,10 @@ AM_CONDITIONAL([HAVE_SYS_HWPROBE_H], [false])
 AM_CONDITIONAL([HAVE_ASM_HWPROBE_H], [false])
 
 # Check for programs
-AC_PROG_CC_STDC
+# AC_PROG_CC_STDC is a functional macro that probes for C99/C89 support on
+# autoconf < 2.70, but is a deprecated (warning-emitting) alias for AC_PROG_CC
+# on autoconf >= 2.70, where AC_PROG_CC itself performs the standard probing.
+m4_version_prereq([2.70], [AC_PROG_CC], [AC_PROG_CC_STDC])
 AC_USE_SYSTEM_EXTENSIONS
 AM_SILENT_RULES([yes])
 LT_INIT
@@ -282,8 +285,29 @@ my_CFLAGS="\
 -Wstrict-prototypes \
 -Wtype-limits \
 -fstack-protector \
--D_FORTIFY_SOURCE=2 \
 "
+
+# Use _FORTIFY_SOURCE=3 on GCC >= 12 on Linux (adds runtime checks even when
+# the compiler can statically prove safety); fall back to =2 elsewhere.
+# _FORTIFY_SOURCE=3 requires glibc >= 2.35 at runtime; macOS (libSystem) and
+# FreeBSD libc do not support it.
+AC_MSG_CHECKING([whether compiler supports -D_FORTIFY_SOURCE=3])
+gcc_major=$($CC -dumpversion | cut -d. -f1)
+case $host_os in
+  *linux*)
+    if test "$GCC" = "yes" && test "$gcc_major" -ge 12 2>/dev/null; then
+        AC_MSG_RESULT([yes])
+        my_CFLAGS="$my_CFLAGS -D_FORTIFY_SOURCE=3"
+    else
+        AC_MSG_RESULT([no, using _FORTIFY_SOURCE=2])
+        my_CFLAGS="$my_CFLAGS -D_FORTIFY_SOURCE=2"
+    fi
+    ;;
+  *)
+    AC_MSG_RESULT([no, non-Linux host, using _FORTIFY_SOURCE=2])
+    my_CFLAGS="$my_CFLAGS -D_FORTIFY_SOURCE=2"
+    ;;
+esac
 AC_SUBST([my_CFLAGS])
 
 AC_CONFIG_FILES([\

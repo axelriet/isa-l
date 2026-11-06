@@ -82,6 +82,7 @@ set(ERASURE_CODE_X86_64_SOURCES
     erasure_code/gf_3vect_mad_avx2_gfni.asm
     erasure_code/gf_4vect_mad_avx2_gfni.asm
     erasure_code/gf_5vect_mad_avx2_gfni.asm
+    erasure_code/gf_6vect_mad_avx2_gfni.asm
     erasure_code/gf_vect_dot_prod_avx512.asm
     erasure_code/gf_2vect_dot_prod_avx512.asm
     erasure_code/gf_3vect_dot_prod_avx512.asm
@@ -92,6 +93,9 @@ set(ERASURE_CODE_X86_64_SOURCES
     erasure_code/gf_vect_dot_prod_avx2_gfni.asm
     erasure_code/gf_2vect_dot_prod_avx2_gfni.asm
     erasure_code/gf_3vect_dot_prod_avx2_gfni.asm
+    erasure_code/gf_4vect_dot_prod_avx2_gfni.asm
+    erasure_code/gf_5vect_dot_prod_avx2_gfni.asm
+    erasure_code/gf_6vect_dot_prod_avx2_gfni.asm
     erasure_code/gf_2vect_dot_prod_avx512_gfni.asm
     erasure_code/gf_3vect_dot_prod_avx512_gfni.asm
     erasure_code/gf_4vect_dot_prod_avx512_gfni.asm
@@ -132,15 +136,8 @@ set(ERASURE_CODE_AARCH64_SOURCES
     erasure_code/aarch64/gf_4vect_mad_sve.S
     erasure_code/aarch64/gf_5vect_mad_sve.S
     erasure_code/aarch64/gf_6vect_mad_sve.S
-    erasure_code/aarch64/gf_vect_dot_prod_sve.S
-    erasure_code/aarch64/gf_2vect_dot_prod_sve.S
-    erasure_code/aarch64/gf_3vect_dot_prod_sve.S
-    erasure_code/aarch64/gf_4vect_dot_prod_sve.S
-    erasure_code/aarch64/gf_5vect_dot_prod_sve.S
-    erasure_code/aarch64/gf_6vect_dot_prod_sve.S
-    erasure_code/aarch64/gf_7vect_dot_prod_sve.S
-    erasure_code/aarch64/gf_8vect_dot_prod_sve.S
     erasure_code/aarch64/gf_vect_mul_sve.S
+    erasure_code/aarch64/gf_nvect_dot_prod_sve.c
     erasure_code/aarch64/ec_multibinary_arm.S
 )
 
@@ -162,11 +159,23 @@ set(ERASURE_CODE_PPC64LE_SOURCES
 )
 
 set(ERASURE_CODE_RISCV64_SOURCES
-    erasure_code/riscv64/ec_multibinary_riscv64_dispatcher.c
+    erasure_code/riscv64/ec_riscv64_dispatcher.c
     erasure_code/riscv64/ec_multibinary_riscv64.S
-    erasure_code/riscv64/ec_gf_vect_mul_rvv.S
-    erasure_code/riscv64/ec_gf_vect_dot_prod_rvv.S
-    erasure_code/riscv64/ec_encode_data_rvv.S
+    erasure_code/riscv64/ec_riscv64_highlevel_func.c
+    erasure_code/riscv64/gf_vect_dot_prod_rvv.S
+    erasure_code/riscv64/gf_2vect_dot_prod_rvv.S
+    erasure_code/riscv64/gf_3vect_dot_prod_rvv.S
+    erasure_code/riscv64/gf_4vect_dot_prod_rvv.S
+    erasure_code/riscv64/gf_5vect_dot_prod_rvv.S
+    erasure_code/riscv64/gf_6vect_dot_prod_rvv.S
+    erasure_code/riscv64/gf_7vect_dot_prod_rvv.S
+    erasure_code/riscv64/gf_vect_mad_rvv.S
+    erasure_code/riscv64/gf_2vect_mad_rvv.S
+    erasure_code/riscv64/gf_3vect_mad_rvv.S
+    erasure_code/riscv64/gf_4vect_mad_rvv.S
+    erasure_code/riscv64/gf_5vect_mad_rvv.S
+    erasure_code/riscv64/gf_6vect_mad_rvv.S
+    erasure_code/riscv64/gf_vect_mul_rvv.S
 )
 
 # Build source list based on architecture

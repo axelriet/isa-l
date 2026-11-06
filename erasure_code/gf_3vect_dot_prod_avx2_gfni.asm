@@ -263,12 +263,13 @@ section .text
 %%next_vect:
     mov     ptr, [src + vec_i]
     simd_load_avx2 x0, ptr + pos, %%LEN, tmp, tmp6 ;Get next source vector
+
+    lea     tmp, [mul_array + vec_i*4]
     add     vec_i, 8
 
-    vmovdqu xgft1, [mul_array]
-    vmovdqu xgft2, [mul_array + vec*4]
-    vmovdqu xgft3, [mul_array + vec*8]
-    add     mul_array, 32
+    vmovdqu xgft1, [tmp]
+    vmovdqu xgft2, [tmp + vec*4]
+    vmovdqu xgft3, [tmp + vec*8]
 
     GF_MUL_XOR VEX, x0, xgft1, xgft1, xp1, xgft2, xgft2, xp2, xgft3, xgft3, xp3
 

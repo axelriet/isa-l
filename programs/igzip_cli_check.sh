@@ -257,5 +257,89 @@ if command -V md5sum >/dev/null 2>&1 && command -V dd >/dev/null 2>&1; then
     fi
 fi
 
+# Regression: gzip stream with no NAME field must not expose the
+# uninitialized output-name buffer used by -N / -dN.
+#
+# When the header carries no FNAME, isal_read_gzip_header() leaves the
+# name buffer untouched, so the CLI must fall back to the name derived
+# from the input file instead of reading uninitialized heap bytes. The
+# multi-file case is the sensitive one: a recycled allocation is not
+# zeroed, so stale buffer contents could end up as the output file name
+# and make later archives collide on it.
+ret=0
+clear_dir
+cp $TEST_FILE $file1 && cp $TEST_FILE $file2 && cp $TEST_FILE $file3 || ret=1
+$IGZIP -N $file1 -o $file1$ds || ret=1
+$IGZIP -n $file2 -o $file2$ds || ret=1
+$IGZIP -n $file3 -o $file3$ds || ret=1
+rm -f $file1 $file2 $file3 || ret=1
+
+$IGZIP -dN $file1$ds $file2$ds $file3$ds || ret=1
+$DIFF $TEST_FILE $file1 && $DIFF $TEST_FILE $file2 && $DIFF $TEST_FILE $file3 || ret=1
+
+# Only the expected inputs and outputs may exist, any other entry means a
+# file was created under a name taken from uninitialized memory
+unexpected=$(ls -A | grep -a -v -x -e "$file1" -e "$file2" -e "$file3" \
+		  -e "$file1$ds" -e "$file2$ds" -e "$file3$ds")
+if [ -n "$unexpected" ]; then
+    echo "FAIL: unexpected output file(s) created: $unexpected"
+    ret=1
+fi
+pass_check $ret "Decompress multiple files with no-name info"
+clear_dir
+
+# Same check for a single archive on a fresh process
+ret=0
+cp $TEST_FILE $file1 && $IGZIP -n $file1 -o $file2$ds && rm -f $file1 || ret=1
+$IGZIP -dN $file2$ds || ret=1
+$DIFF $TEST_FILE $file2 || ret=1
+unexpected=$(ls -A | grep -a -v -x -e "$file2" -e "$file2$ds")
+if [ -n "$unexpected" ]; then
+    echo "FAIL: unexpected output file(s) created: $unexpected"
+    ret=1
+fi
+pass_check $ret "Decompress single file with no-name info"
+clear_dir
+
+# Path-traversal via gzip NAME field
+# A crafted .gz whose NAME is an absolute path must decompress to a file
+# named only by the basename in the CWD, never to the absolute path.
+#
+# evil_traversal.gz is a hand-crafted gzip stream whose FNAME header field
+# is the absolute path /tmp/igzip_traversal_baked.  Embedded as base64 to
+# avoid build-time dependencies.  To regenerate, run:
+#
+# { printf '\x1f\x8b\x08\x08\x00\x00\x00\x00\x00\xff'  # fixed header (FLG=0x08=FNAME)
+#   printf '/tmp/igzip_traversal_baked\x00'              # FNAME, NUL-terminated
+#   printf 'TRAVERSAL\n' | gzip -cn | tail -c +11 | head -c -8  # raw DEFLATE
+#   printf 'TRAVERSAL\n' | gzip -cn | tail -c 8          # CRC32 + ISIZE
+# } > evil_traversal.gz && base64 evil_traversal.gz
+ret=0
+traversal_target=/tmp/igzip_traversal_baked
+rm -f "$traversal_target"
+
+base64 -d <<'B64' > evil_traversal.gz
+H4sICAAAAAAA/y90bXAvaWd6aXBfdHJhdmVyc2FsX2Jha2VkAAsJcgxzDQp29OECAJKQXKMKAAAA
+B64
+
+# Run igzip -d -N: must write basename only, not the absolute path
+$IGZIP -d -N evil_traversal.gz || ret=1
+
+# The absolute path must NOT have been created
+if [ -f "$traversal_target" ]; then
+    echo "FAIL: path traversal succeeded — file written to $traversal_target"
+    ret=1
+fi
+
+# The basename must exist in the CWD
+if [ ! -f "igzip_traversal_baked" ]; then
+    echo "FAIL: expected igzip_traversal_baked in CWD but it was not found"
+    ret=1
+fi
+
+rm -f "$traversal_target" igzip_traversal_baked evil_traversal.gz
+pass_check $ret "Path traversal: gzip NAME absolute path stripped to basename"
+clear_dir
+
 echo "Passed all cli checks"
 cleanup 0

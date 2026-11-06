@@ -94,6 +94,7 @@ objs = \
 	bin\gf_3vect_mad_avx2_gfni.obj \
 	bin\gf_4vect_mad_avx2_gfni.obj \
 	bin\gf_5vect_mad_avx2_gfni.obj \
+	bin\gf_6vect_mad_avx2_gfni.obj \
 	bin\gf_vect_dot_prod_avx512.obj \
 	bin\gf_2vect_dot_prod_avx512.obj \
 	bin\gf_3vect_dot_prod_avx512.obj \
@@ -104,6 +105,9 @@ objs = \
 	bin\gf_vect_dot_prod_avx2_gfni.obj \
 	bin\gf_2vect_dot_prod_avx2_gfni.obj \
 	bin\gf_3vect_dot_prod_avx2_gfni.obj \
+	bin\gf_4vect_dot_prod_avx2_gfni.obj \
+	bin\gf_5vect_dot_prod_avx2_gfni.obj \
+	bin\gf_6vect_dot_prod_avx2_gfni.obj \
 	bin\gf_2vect_dot_prod_avx512_gfni.obj \
 	bin\gf_3vect_dot_prod_avx512_gfni.obj \
 	bin\gf_4vect_dot_prod_avx512_gfni.obj \
@@ -308,6 +312,7 @@ checks = \
 	crc64_funcs_test.exe \
 	crc32_funcs_test.exe \
 	igzip_rand_test.exe \
+	igzip_bounds_test.exe \
 	igzip_wrapper_hdr_test.exe \
 	checksum32_funcs_test.exe \
 	mem_zero_detect_test.exe \
@@ -374,7 +379,7 @@ isa-l.h:
 	@echo.>> $@
 	@echo #define ISAL_MAJOR_VERSION 2 >> $@
 	@echo #define ISAL_MINOR_VERSION 32 >> $@
-	@echo #define ISAL_PATCH_VERSION 0 >> $@
+	@echo #define ISAL_PATCH_VERSION 1 >> $@
 	@echo #define ISAL_MAKE_VERSION(maj, min, patch)  ((maj) * 0x10000 + (min) * 0x100 + (patch))>> $@
 	@echo #define ISAL_VERSION ISAL_MAKE_VERSION(ISAL_MAJOR_VERSION, ISAL_MINOR_VERSION, ISAL_PATCH_VERSION)>> $@
 	@echo.>> $@

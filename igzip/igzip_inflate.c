@@ -1766,11 +1766,11 @@ isal_inflate_reset(struct inflate_state *state)
 }
 
 static inline uint32_t
-fixed_size_read(struct inflate_state *state, uint8_t **read_buf, int read_size)
+fixed_size_read(struct inflate_state *state, uint8_t **read_buf, uint32_t read_size)
 {
         uint32_t tmp_in_size = state->tmp_in_size;
 
-        if (state->avail_in + tmp_in_size < (uint32_t) read_size) {
+        if ((uint64_t) state->avail_in + tmp_in_size < read_size) {
                 memcpy(state->tmp_in_buffer + tmp_in_size, state->next_in, state->avail_in);
                 tmp_in_size += state->avail_in;
                 state->tmp_in_size = tmp_in_size;
@@ -2111,7 +2111,7 @@ isal_read_zlib_header(struct inflate_state *state, struct isal_zlib_header *zlib
                                 break;
                         }
 
-                        zlib_hdr->dict_id = load_le_u32(next_in);
+                        zlib_hdr->dict_id = load_be_u32(next_in);
                 }
 
                 state->wrapper_flag = 1;
@@ -2276,6 +2276,19 @@ isal_inflate(struct inflate_state *state)
                 }
 
                 return (ret > 0) ? ISAL_DECOMP_OK : ret;
+        }
+
+        /* An unfinished wrapper header cannot be decoded as a deflate block. */
+        switch (state->block_state) {
+        case ISAL_GZIP_EXTRA_LEN:
+        case ISAL_GZIP_EXTRA:
+        case ISAL_GZIP_NAME:
+        case ISAL_GZIP_COMMENT:
+        case ISAL_GZIP_HCRC:
+        case ISAL_ZLIB_DICT:
+                return ISAL_INVALID_WRAPPER;
+        default:
+                break;
         }
 
         if (state->block_state != ISAL_BLOCK_FINISH) {
@@ -2449,8 +2462,12 @@ isal_inflate(struct inflate_state *state)
                                 ret = check_gzip_checksum(state);
                                 break;
                         }
+                        /* Undo count stuff of bytes read into the read buffer */
+                        state->next_in -= state->read_in_length / 8;
+                        state->avail_in += state->read_in_length / 8;
+                        state->read_in_length = 0;
+                        state->read_in = 0;
                 }
-
                 state->total_out -= state->tmp_out_valid - state->tmp_out_processed;
         }
 
