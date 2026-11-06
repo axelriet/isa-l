@@ -1,1 +1,2 @@
-nmake -f Makefile.nmake
+@nmake -f Makefile.nmake clean
+@nmake -f Makefile.nmake
