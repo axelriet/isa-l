@@ -205,10 +205,21 @@ objs = \
 	bin\mem_zero_detect_sse.obj \
 	bin\mem_multibinary.obj
 
+# nasm always produces win64 objects, so the C compiler must target x64 too. Use the
+# "x64 Native Tools Command Prompt" (vcvars64.bat), not the default x86 developer prompt.
+!IF DEFINED(VSCMD_ARG_TGT_ARCH)
+!IF "$(VSCMD_ARG_TGT_ARCH)" != "x64"
+!ERROR This makefile builds x64 only. The environment targets $(VSCMD_ARG_TGT_ARCH): run vcvars64.bat, then "nmake -f Makefile.nmake clean" and build again.
+!ENDIF
+!ENDIF
+
 INCLUDES   = -I./ -Ierasure_code/ -Iraid/ -Icrc/ -Iigzip/ -Iprograms/ -Imem/ -Imisc/ -Iinclude/ -Itests/fuzz/ -Iexamples/ec/
-CFLAGS_REL = -O2 -DNDEBUG /Z7 /Gy /Oi /GF /Ot /Ob2 /Oy /MT /sdl- /GS- /arch:AVX2 /GL /Gd
-CFLAGS_DBG = -Od -DDEBUG /Z7 /MTd /GS- /Gy- /arch:AVX2 /sdl- /Oy /Gd
-LINKFLAGS  = -nologo -incremental:no -debug ucrt.lib /nodefaultlib:libucrt.lib
+# The static library holds plain machine code (no /GL, no /LTCG): any later compiler can link it.
+# /Zl leaves the C runtime to the consumer, so /MT and /MTd modules link it without a conflict.
+# The DLL and the test programs therefore name their runtime libraries in LINKFLAGS.
+CFLAGS_REL = -O2 -DNDEBUG /Z7 /Gy /Oi /GF /Ot /Ob2 /Oy /MT /Zl /sdl- /GS- /arch:AVX2 /Gd
+CFLAGS_DBG = -Od -DDEBUG /Z7 /MTd /Zl /GS- /Gy- /arch:AVX2 /sdl- /Oy /Gd
+LINKFLAGS  = -nologo -machine:x64 -incremental:no -debug libcmt.lib libvcruntime.lib ucrt.lib /nodefaultlib:libucrt.lib
 CFLAGS     = $(CFLAGS_REL) -nologo -D_USE_MATH_DEFINES -DISAL_DEPRECATED_INTERNAL $(INCLUDES) $(D) /W3 -DISA_L_CALLING_CONVENTION=__cdecl
 AFLAGS     = -f win64 $(INCLUDES) $(D)
 CC         = cl
@@ -222,7 +233,7 @@ dll: bin isa-l.dll isa-l.h
 bin: ; -mkdir $@
 
 isa-l_static.lib: $(objs)
-	lib /LTCG -out:$@ @<<
+	lib -nologo -machine:x64 -out:$@ @<<
 $?
 <<
 
